@@ -1,5 +1,7 @@
 # Teste de Software
 
+[![codecov](https://codecov.io/github/flaviomarcilio/teste-de-software/graph/badge.svg?token=3GO8LDA830)](https://codecov.io/github/flaviomarcilio/teste-de-software)
+
 Trabalho prático da disciplina Teste de Software - UFMG 2025/2
 
 ## 1. Desenvolvedor
