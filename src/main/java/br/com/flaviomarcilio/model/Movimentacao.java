@@ -6,7 +6,7 @@ import io.smallrye.common.constraint.NotNull;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "movimentacoes")
@@ -15,7 +15,7 @@ public class Movimentacao {
     public Movimentacao() {
     }
 
-    public Movimentacao(Long id, TipoTransacao tipoTransacao, Date data, TipoMovimentacao tipoMovimentacao,
+    public Movimentacao(Long id, TipoTransacao tipoTransacao, LocalDate data, TipoMovimentacao tipoMovimentacao,
                         String codigoNegociacao, String instituicao, Integer quantidade, BigDecimal precoUnitario) {
         this.id = id;
         this.tipoTransacao = tipoTransacao;
@@ -36,7 +36,7 @@ public class Movimentacao {
     private TipoTransacao tipoTransacao;
 
     @NotNull
-    private Date data;
+    private LocalDate data;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -65,7 +65,7 @@ public class Movimentacao {
         return tipoTransacao;
     }
 
-    public Date getData() {
+    public LocalDate getData() {
         return data;
     }
 
