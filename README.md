@@ -1,4 +1,4 @@
-# Teste de Software
+# GERENCIADOR DE INVESTIMENTOS
 
 [![codecov](https://codecov.io/github/flaviomarcilio/teste-de-software/graph/badge.svg?token=3GO8LDA830)](https://codecov.io/github/flaviomarcilio/teste-de-software)
 
