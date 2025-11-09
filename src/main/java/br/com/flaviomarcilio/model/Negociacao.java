@@ -6,6 +6,7 @@ import io.smallrye.common.constraint.NotNull;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -15,7 +16,7 @@ public class Negociacao {
     public Negociacao() {
     }
 
-    public Negociacao(Long id, Date data, TipoNegociacao tipoNegociacao, TipoMercado tipoMercado, Date vencimento,
+    public Negociacao(Long id, LocalDate data, TipoNegociacao tipoNegociacao, TipoMercado tipoMercado, LocalDate vencimento,
                       String instituicao, String codigoNegociacao, Integer quantidade, BigDecimal precoUnitario) {
         this.id = id;
         this.data = data;
@@ -33,7 +34,7 @@ public class Negociacao {
     private Long id;
 
     @NotNull
-    private Date data;
+    private LocalDate data;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -44,7 +45,7 @@ public class Negociacao {
     @Enumerated(EnumType.STRING)
     private TipoMercado mercado;
 
-    private Date vencimento;
+    private LocalDate vencimento;
 
     private String instituicao;
 
@@ -63,7 +64,7 @@ public class Negociacao {
         return id;
     }
 
-    public Date getData() {
+    public LocalDate getData() {
         return data;
     }
 
@@ -75,7 +76,7 @@ public class Negociacao {
         return mercado;
     }
 
-    public Date getVencimento() {
+    public LocalDate getVencimento() {
         return vencimento;
     }
 
