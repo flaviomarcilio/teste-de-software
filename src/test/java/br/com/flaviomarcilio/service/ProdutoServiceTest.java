@@ -2,17 +2,21 @@ package br.com.flaviomarcilio.service;
 
 import br.com.flaviomarcilio.model.Produto;
 import br.com.flaviomarcilio.model.enums.TipoProduto;
+import br.com.flaviomarcilio.repository.ProdutoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
+import br.com.flaviomarcilio.exceptions.ProdutoNaoCadastradoException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ProdutoServiceTest {
 
+    private ProdutoRepository produtoRepository;
     private ProdutoService produtoService;
     private Produto produto1;
     private Produto produto2;
@@ -21,7 +25,8 @@ class ProdutoServiceTest {
     @BeforeEach
     void setUp() {
         //Arrange
-        produtoService = new ProdutoService();
+        produtoRepository = mock(ProdutoRepository.class);
+        produtoService = new ProdutoService(produtoRepository);
         produto1 = new Produto(
                 "PETR4",
                 "PETROBRAS S.A.",
@@ -55,19 +60,11 @@ class ProdutoServiceTest {
     }
 
     @Test
-    @DisplayName("Deve cadastrar um produto com sucesso")
-    void deveCadastrarProduto() {
-        produtoService.cadastrar(produto1);
-
-        List<Produto> produtos = produtoService.buscarTodos();
-
-        assertEquals(1, produtos.size());
-        assertEquals("PETR4", produtos.get(0).getCodigoNegociacao());
-    }
-
-    @Test
     @DisplayName("Deve cadastrar múltiplos produtos")
     void deveCadastrarMultiplosProdutos() {
+        List<Produto> produtosCadastrados = Arrays.asList(produto1, produto2, produto3);
+        when(produtoRepository.listAll()).thenReturn(produtosCadastrados);
+
         produtoService.cadastrar(produto1);
         produtoService.cadastrar(produto2);
         produtoService.cadastrar(produto3);
@@ -80,22 +77,19 @@ class ProdutoServiceTest {
     @Test
     @DisplayName("Deve buscar todos os produtos cadastrados")
     void deveBuscarTodosProdutos() {
-        produtoService.cadastrar(produto1);
-        produtoService.cadastrar(produto2);
+        List<Produto> produtosCadastrados = Arrays.asList(produto1, produto2, produto3);
+        when(produtoRepository.listAll()).thenReturn(produtosCadastrados);
 
         List<Produto> resultado = produtoService.buscarTodos();
 
         assertNotNull(resultado);
-        assertEquals(2, resultado.size());
-        assertTrue(resultado.contains(produto1));
-        assertTrue(resultado.contains(produto2));
+        assertEquals(3, resultado.size());
     }
 
     @Test
     @DisplayName("Deve buscar produto por ticker existente")
     void deveBuscarProdutoPorTickerExistente() {
-        produtoService.cadastrar(produto1);
-        produtoService.cadastrar(produto2);
+        when(produtoRepository.findByTicker("VALE3")).thenReturn(produto2);
 
         Produto resultado = produtoService.buscarPorTicker("VALE3");
 
@@ -105,20 +99,18 @@ class ProdutoServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao buscar produto por ticker inexistente")
-    void deveLancarExcecaoAoBuscarTickerInexistente() {
-        produtoService.cadastrar(produto1);
+    @DisplayName("Deve lançar exceção ao buscar em lista vazia")
+    void deveLancarExcecaoAoBuscarEmListaVazia() {
+        when(produtoRepository.findByTicker("PETR4")).thenReturn(null);
 
-        assertThrows(NoSuchElementException.class, () -> {
-            produtoService.buscarPorTicker("ABCD3");
-        });
+        assertThrows(ProdutoNaoCadastradoException.class, () -> produtoService.buscarPorTicker("PETR4"));
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao buscar em lista vazia")
-    void deveLancarExcecaoAoBuscarEmListaVazia() {
-        assertThrows(NoSuchElementException.class, () -> {
-            produtoService.buscarPorTicker("PETR4");
-        });
+    @DisplayName("Deve persistir produto ao cadastrar")
+    void devePersistirAoCadastrar() {
+        produtoService.cadastrar(produto1);
+
+        verify(produtoRepository, times(1)).persist(produto1);
     }
 }

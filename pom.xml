@@ -4,6 +4,12 @@
     <groupId>br.com.flaviomarcilio</groupId>
     <artifactId>investment-management</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <repositories>
+        <repository>
+            <id>maven-central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
 
     <properties>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
@@ -12,9 +18,16 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.22.2</quarkus.platform.version>
+        <jacocoArgLine></jacocoArgLine>
+
+        <!-- Versões -->
+        <quarkus.version>3.22.2</quarkus.version>
+        <surefire.version>3.5.2</surefire.version>
+        <mockito.version>5.18.0</mockito.version>
+        <jacoco.version>0.8.11</jacoco.version>
         <skipITs>true</skipITs>
-        <surefire-plugin.version>3.5.2</surefire-plugin.version>
+        <!-- JaCoCo - Cobertura Mínima -->
+        <jacoco.coverage.minimum>0.80</jacoco.coverage.minimum>
     </properties>
 
     <dependencyManagement>
@@ -22,7 +35,7 @@
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>${quarkus.platform.artifact-id}</artifactId>
-                <version>${quarkus.platform.version}</version>
+                <version>${quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -62,68 +75,44 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
+
+        <!-- ========== DEPENDÊNCIAS DE TESTE ========== -->
+
+        <!-- Quarkus JUnit 5 -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Quarkus Mockito (já inclui mockito-core) -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Plugin JaCoCo para cobertura de código -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
-                <executions>
-                    <!-- Prepara o agente JaCoCo -->
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <!-- Gera o relatório após os testes -->
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                    <!-- Verifica cobertura mínima (opcional) -->
-                    <execution>
-                        <id>check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <rule>
-                                    <element>PACKAGE</element>
-                                    <limits>
-                                        <limit>
-                                            <counter>LINE</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
-                                        </limit>
-                                    </limits>
-                                </rule>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!-- ========== QUARKUS PLUGIN ========== -->
             <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
-                <version>${quarkus.platform.version}</version>
+                <version>${quarkus.version}</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -136,6 +125,100 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- ========== JACOCO PLUGIN (Cobertura de Código) ========== -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <!-- Prepara agente JaCoCo antes dos testes -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                                CRÍTICO: JaCoCo define sua própria propriedade argLine
+                                Não sobrescreva 'argLine' diretamente!
+                            -->
+                            <propertyName>jacocoArgLine</propertyName>
+                        </configuration>
+                    </execution>
+
+                    <!-- Gera relatório após os testes -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Verifica cobertura mínima -->
+                    <execution>
+                        <id>check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco.coverage.minimum}</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco.coverage.minimum}</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- ========== SUREFIRE PLUGIN (Execução de Testes) ========== -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <!--
+                        CONFIGURAÇÃO CRÍTICA:
+                        Combina JaCoCo Agent + Mockito Agent + Configurações Quarkus
+                    -->
+                    <argLine>
+                        ${jacocoArgLine}
+                        -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+                        -Dmaven.home=${maven.home}
+                    </argLine>
+
+                    <!-- Propriedades do sistema para Quarkus -->
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        <maven.home>${maven.home}</maven.home>
+
+                        <!-- Habilita recursos inline do Mockito -->
+                        <mockito.mock-maker.inline>true</mockito.mock-maker.inline>
+                    </systemPropertyVariables>
+
+                    <!-- Inclui todos os testes -->
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <!-- ========== COMPILER PLUGIN ========== -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${compiler-plugin.version}</version>
@@ -143,19 +226,10 @@
                     <parameters>true</parameters>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire-plugin.version}</version>
-                <configuration>
-                    <systemPropertyVariables>
-                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                        <maven.home>${maven.home}</maven.home>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
+
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${surefire-plugin.version}</version>
+                <version>${surefire.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -172,21 +246,55 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
+    <!-- ========== PROFILE PARA COBERTURA (Opcional) ========== -->
     <profiles>
+        <!-- Profile para gerar relatório detalhado de cobertura -->
         <profile>
-            <id>native</id>
-            <activation>
-                <property>
-                    <name>native</name>
-                </property>
-            </activation>
-            <properties>
-                <skipITs>false</skipITs>
-                <quarkus.native.enabled>true</quarkus.native.enabled>
-            </properties>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <!-- Gera relatório HTML detalhado -->
+                            <execution>
+                                <id>report-aggregate</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Profile para CI/CD com CodeCov -->
+        <profile>
+            <id>codecov</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>report-for-codecov</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

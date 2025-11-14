@@ -1,31 +1,34 @@
 package br.com.flaviomarcilio.service;
 
+import br.com.flaviomarcilio.exceptions.ProdutoNaoCadastradoException;
 import br.com.flaviomarcilio.model.Produto;
+import br.com.flaviomarcilio.repository.ProdutoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
 public class ProdutoService {
 
-    private List<Produto> produtos;
+    private final ProdutoRepository produtoRepository;
 
-    public ProdutoService() {
-        produtos = new ArrayList<>();
+    public ProdutoService(ProdutoRepository repository) {
+        produtoRepository = repository;
     }
 
     public List<Produto> buscarTodos() {
-        return this.produtos;
+        return produtoRepository.listAll();
     }
 
     public Produto buscarPorTicker(String ticker) {
-        return produtos.stream()
-                .filter(produto -> produto.getCodigoNegociacao().equals(ticker))
-                .toList().getFirst();
+        Produto produto = produtoRepository.findByTicker(ticker);
+        if (produto == null) {
+            throw new ProdutoNaoCadastradoException("Produto com ticker " + ticker + " não cadastrado.");
+        }
+        return produto;
     }
 
     public void cadastrar(Produto produto) {
-        produtos.add(produto);
+        produtoRepository.persist(produto);
     }
 }
