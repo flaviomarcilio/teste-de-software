@@ -42,13 +42,18 @@ jobs:
         run: mvn -B test
 
       # Upload do relatório para CodeCov
-      - name: Upload coverage reports to Codecov
+      - name: Upload unit test coverage
         uses: codecov/codecov-action@v5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
         with:
           files: ./target/site/jacoco/jacoco.xml
           flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          verbose: true
+
+      - name: Upload integration test coverage
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+        with:
+          files: ./target/site/jacoco-it/jacoco.xml
+          flags: integration
