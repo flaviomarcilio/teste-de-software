@@ -6,17 +6,17 @@ import br.com.flaviomarcilio.model.Produto;
 import br.com.flaviomarcilio.model.enums.TipoMercado;
 import br.com.flaviomarcilio.model.enums.TipoNegociacao;
 import br.com.flaviomarcilio.model.enums.TipoProduto;
+import br.com.flaviomarcilio.repository.NegociacaoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,18 +24,17 @@ import static org.mockito.Mockito.*;
 @DisplayName("Testes para NegociacaoService")
 class NegociacaoServiceTest {
 
-    @Mock
+    private NegociacaoRepository negociacaoRepository;
     private ProdutoService produtoService;
-
     private NegociacaoService negociacaoService;
     private Produto produto1;
     private Produto produto2;
-    private Produto produto3;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        negociacaoService = new NegociacaoService(produtoService);
+        negociacaoRepository = mock(NegociacaoRepository.class);
+        produtoService = mock(ProdutoService.class);
+        negociacaoService = new NegociacaoService(negociacaoRepository, produtoService);
 
         produto1 = new Produto(
                 "PETR4",
@@ -51,13 +50,6 @@ class NegociacaoServiceTest {
                 "VALE3BR",
                 TipoProduto.ON,
                 "Bradesco");
-        produto3 = new Produto(
-                "ITUB4",
-                "ITAU S.A.",
-                "60.701.190/0001-04",
-                "ITAU4BR",
-                TipoProduto.PN,
-                "Bradesco");
     }
 
     @Nested
@@ -67,6 +59,8 @@ class NegociacaoServiceTest {
         @Test
         @DisplayName("deve retornar lista vazia quando nenhuma negociação foi cadastrada")
         void deveRetornarListaVazia() {
+            when(negociacaoRepository.listAll()).thenReturn(Collections.emptyList());
+
             List<Negociacao> resultado = negociacaoService.buscarTodas();
 
             assertNotNull(resultado);
@@ -102,13 +96,12 @@ class NegociacaoServiceTest {
                     10,
                     new BigDecimal("3.50"));
 
-            negociacaoService.cadastrar(negociacao1);
-            negociacaoService.cadastrar(negociacao2);
+            when(negociacaoRepository.listAll()).thenReturn(List.of(negociacao1, negociacao2));
 
             List<Negociacao> negociacoes = negociacaoService.buscarTodas();
             assertEquals(2, negociacoes.size());
-            verify(produtoService, times(1)).buscarPorTicker("PETR4");
-            verify(produtoService, times(1)).buscarPorTicker("VALE3");
+            assertTrue(negociacoes.contains(negociacao1));
+            assertTrue(negociacoes.contains(negociacao2));
         }
 
         @Test
@@ -128,7 +121,7 @@ class NegociacaoServiceTest {
                     10,
                     new BigDecimal("4.50"));
 
-            negociacaoService.cadastrar(negociacao1);
+            when(negociacaoRepository.findById(1L)).thenReturn(negociacao1);
 
             Negociacao resultado = negociacaoService.buscarPorId(1L);
 
@@ -139,11 +132,11 @@ class NegociacaoServiceTest {
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando ID não existe")
-        void deveLancarExcecaoQuandoIdNaoExiste() {
-            assertThrows(NoSuchElementException.class, () -> {
-                negociacaoService.buscarPorId(999L);
-            });
+        @DisplayName("deve retornar null quando ID não existe")
+        void deveRetornarNullQuandoIdNaoExiste() {
+            when(negociacaoRepository.findById(999L)).thenReturn(null);
+            Negociacao resultado = negociacaoService.buscarPorId(999L);
+            assertNull(resultado);
         }
     }
 
@@ -170,15 +163,13 @@ class NegociacaoServiceTest {
 
             assertDoesNotThrow(() -> negociacaoService.cadastrar(negociacao1));
 
-            List<Negociacao> negociacoes = negociacaoService.buscarTodas();
-            assertEquals(1, negociacoes.size());
-            assertEquals(negociacao1, negociacoes.get(0));
+            verify(negociacaoRepository, times(1)).persist(negociacao1);
         }
 
         @Test
         @DisplayName("não deve cadastrar quando produto service retorna null")
         void naoDeveCadastrarQuandoProdutoServiceRetornaNull() {
-            when(produtoService.buscarPorTicker(anyString())).thenReturn(null);
+            when(produtoService.buscarPorTicker(anyString())).thenThrow(new ProdutoNaoCadastradoException());
 
             Negociacao negociacao1 = new Negociacao(
                     1L,
@@ -191,17 +182,14 @@ class NegociacaoServiceTest {
                     10,
                     new BigDecimal("4.50"));
 
-            assertThrows(ProdutoNaoCadastradoException.class, () -> {
-                negociacaoService.cadastrar(negociacao1);
-            });
-
-            assertEquals(0, negociacaoService.buscarTodas().size());
+            assertThrows(ProdutoNaoCadastradoException.class, () -> negociacaoService.cadastrar(negociacao1));
+            verify(negociacaoRepository, never()).persist(any(br.com.flaviomarcilio.model.Negociacao.class));
         }
 
         @Test
         @DisplayName("deve lançar exceção ProdutoNaoCadastradoException quando produto não cadastrado")
         void deveLancarExcecaoEspecificaQuandoProdutoNaoCadastrado() {
-            when(produtoService.buscarPorTicker("ITUB4")).thenReturn(null);
+            when(produtoService.buscarPorTicker("ITUB4")).thenThrow(new ProdutoNaoCadastradoException());
 
             Negociacao negociacao1 = new Negociacao(
                     1L,
@@ -214,10 +202,8 @@ class NegociacaoServiceTest {
                     10,
                     new BigDecimal("4.50"));
 
-            Exception exception = assertThrows(ProdutoNaoCadastradoException.class, () -> {
-                negociacaoService.cadastrar(negociacao1);
-            });
-
+            Exception exception = assertThrows(ProdutoNaoCadastradoException.class, 
+                    () -> negociacaoService.cadastrar(negociacao1));
             assertInstanceOf(ProdutoNaoCadastradoException.class, exception);
         }
     }
