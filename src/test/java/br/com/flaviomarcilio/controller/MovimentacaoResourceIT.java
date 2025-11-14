@@ -17,9 +17,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
 @DisplayName("Testes de Integração para o Recurso Movimentação")
@@ -155,14 +154,54 @@ public class MovimentacaoResourceIT {
 
             given()
                 .contentType(ContentType.JSON)
-                .pathParam("id", 2L)
+                .pathParam("id", 1L)
             .when()
                 .get("/api/v1/movimentacao/{id}")
             .then()
                 .statusCode(Response.Status.OK.getStatusCode())
-                .body("id", equalTo(2))
-                .body("codigoNegociacao", equalTo("VALE3"))
-                .body("tipoMovimentacao", equalTo("JUROS_SOBRE_CAPITAL_PROPRIO"));
+                .body("id", equalTo(1))
+                .body("codigoNegociacao", equalTo("PETR4"))
+                .body("tipoMovimentacao", equalTo("DIVIDENDO"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Testes do endpoint POST /api/v1/movimentacao")
+    class CadastrarTests {
+
+        @Test
+        @DisplayName("Deve cadastrar movimentação com status 201")
+        void deveCadastrarMovimentacaoComSucesso() {
+
+            Movimentacao dividendosPetr4 = new Movimentacao(
+                    TipoTransacao.CREDITO,
+                    LocalDate.now(),
+                    TipoMovimentacao.DIVIDENDO,
+                    "PETR4",
+                    "BB Banco de Investimentos",
+                    10,
+                    new BigDecimal("4.50"));
+
+            given()
+                .contentType(ContentType.JSON)
+                .body(dividendosPetr4)
+            .when()
+                .post("/api/v1/movimentacao")
+            .then()
+                .statusCode(Response.Status.CREATED.getStatusCode())
+                .header("Location", containsString("/api/v1/movimentacao"));
+        }
+
+        @Test
+        @DisplayName("Deve retornar erro 400 para body vazio")
+        void deveRetornarErro400ParaBodyVazio() {
+
+            given()
+                .contentType(ContentType.JSON)
+            .when()
+                .post("/api/v1/movimentacao")
+            .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
         }
     }
 }

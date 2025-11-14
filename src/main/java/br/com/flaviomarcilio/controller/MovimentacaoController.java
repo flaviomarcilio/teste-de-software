@@ -41,6 +41,10 @@ public class MovimentacaoController {
     @Transactional
     public RestResponse<Void> cadastrar(Movimentacao movimentacao, @Context UriInfo uriInfo) {
 
+        if (movimentacao == null) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
+
         service.cadastrar(movimentacao);
         return RestResponse.created(uriInfo.getAbsolutePathBuilder().build());
     }
