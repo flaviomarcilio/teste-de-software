@@ -38,18 +38,20 @@ jobs:
         run: mvn -B package --file pom.xml
 
       # Execução de teste e geração de relatório de cobertura
-      - name: Run tests
-        run:  mvn -B integration-test
+      - name: Run all tests
+        run:  mvn clean verify
 
-      # Upload do relatório para CodeCov
+      # Upload do relatório de cobertura de testes unitários
       - name: Upload unit test coverage
         uses: codecov/codecov-action@v5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
         with:
-          files: ./target/site/jacoco/jacoco.xml
+          files: ./target/site/jacoco-unit/jacoco.xml
           flags: unittests
+          name: unit-test-coverage
 
+      # Upload do relatório de cobertura de testes de integração
       - name: Upload integration test coverage
         uses: codecov/codecov-action@v5
         env:
@@ -57,3 +59,4 @@ jobs:
         with:
           files: ./target/site/jacoco-it/jacoco.xml
           flags: integration
+          name: integration-tests-coverage
