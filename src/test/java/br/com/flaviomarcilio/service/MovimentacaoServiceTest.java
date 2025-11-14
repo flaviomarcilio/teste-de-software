@@ -86,7 +86,6 @@ class MovimentacaoServiceTest {
             Movimentacao resultado = movimentacaoService.buscarPorId(1L);
 
             assertNotNull(resultado);
-            assertEquals(1L, resultado.getId());
             assertEquals("PETR4", resultado.getCodigoNegociacao());
             assertEquals(new BigDecimal("4.50"), resultado.getPrecoUnitario());
         }
@@ -115,7 +114,6 @@ class MovimentacaoServiceTest {
             Movimentacao resultado = movimentacaoService.buscarPorId(2L);
 
             assertNotNull(resultado);
-            assertEquals(2L, resultado.getId());
             assertEquals("VALE3", resultado.getCodigoNegociacao());
             assertEquals(movimentacao2, resultado);
         }

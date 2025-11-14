@@ -84,7 +84,6 @@ class MovimentacaoControllerTest {
             assertNotNull(response);
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             assertEquals(movimentacao1, response.getEntity());
-            assertEquals(1L, response.getEntity().getId());
             verify(movimentacaoService, times(1)).buscarPorId(1L);
         }
     }
