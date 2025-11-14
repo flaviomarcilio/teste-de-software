@@ -39,7 +39,7 @@ jobs:
 
       # Execução de teste e geração de relatório de cobertura
       - name: Run tests
-        run: mvn -B test
+        run:  mvn -B integration-test
 
       # Upload do relatório para CodeCov
       - name: Upload unit test coverage
