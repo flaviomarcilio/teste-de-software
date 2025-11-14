@@ -2,7 +2,6 @@ package br.com.flaviomarcilio.service;
 
 import br.com.flaviomarcilio.exceptions.ProdutoNaoCadastradoException;
 import br.com.flaviomarcilio.model.Negociacao;
-import br.com.flaviomarcilio.model.Produto;
 import br.com.flaviomarcilio.repository.NegociacaoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -28,13 +27,12 @@ public class NegociacaoService {
     }
 
     public void cadastrar(Negociacao negociacao) {
-        String ticker = negociacao.getCodigoNegociacao();
-
+        // Verifica se o produto está cadastrado
         try {
-            Produto produto = produtoService.buscarPorTicker(ticker);
-            negociacaoRepository.persist(negociacao);
+            produtoService.buscarPorTicker(negociacao.getCodigoNegociacao());
         } catch (ProdutoNaoCadastradoException e) {
-            throw new ProdutoNaoCadastradoException();
+            throw new ProdutoNaoCadastradoException("Não é possível cadastrar a negociação. " + e.getMessage());
         }
+        negociacaoRepository.persist(negociacao);
     }
 }

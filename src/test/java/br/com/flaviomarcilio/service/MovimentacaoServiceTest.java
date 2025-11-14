@@ -3,6 +3,7 @@ package br.com.flaviomarcilio.service;
 import br.com.flaviomarcilio.model.Movimentacao;
 import br.com.flaviomarcilio.model.enums.TipoMovimentacao;
 import br.com.flaviomarcilio.model.enums.TipoTransacao;
+import br.com.flaviomarcilio.repository.MovimentacaoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -11,13 +12,14 @@ import org.junit.jupiter.api.Nested;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @DisplayName("Testes para MovimentacaoService")
 class MovimentacaoServiceTest {
 
+    private MovimentacaoRepository movimentacaoRepository;
     private MovimentacaoService movimentacaoService;
     private Movimentacao movimentacao1;
     private Movimentacao movimentacao2;
@@ -25,7 +27,9 @@ class MovimentacaoServiceTest {
 
     @BeforeEach
     void setUp() {
-        movimentacaoService = new MovimentacaoService();
+
+        movimentacaoRepository = mock(MovimentacaoRepository.class);
+        movimentacaoService = new MovimentacaoService(movimentacaoRepository);
 
         movimentacao1 = new Movimentacao(1L,
                 TipoTransacao.CREDITO,
@@ -62,9 +66,7 @@ class MovimentacaoServiceTest {
         @Test
         @DisplayName("Deve retornar todas as movimentações cadastradas")
         void deveBuscarTodasMovimentacoes() {
-            movimentacaoService.cadastrar(movimentacao1);
-            movimentacaoService.cadastrar(movimentacao2);
-            movimentacaoService.cadastrar(movimentacao3);
+            when(movimentacaoRepository.listAll()).thenReturn(List.of(movimentacao1, movimentacao2, movimentacao3));
 
             List<Movimentacao> resultado = movimentacaoService.buscarTodas();
 
@@ -78,8 +80,8 @@ class MovimentacaoServiceTest {
         @Test
         @DisplayName("Deve buscar movimentação por ID existente")
         void deveBuscarMovimentacaoPorIdExistente() {
-            movimentacaoService.cadastrar(movimentacao1);
-            movimentacaoService.cadastrar(movimentacao2);
+
+            when(movimentacaoRepository.findById(1L)).thenReturn(movimentacao1);
 
             Movimentacao resultado = movimentacaoService.buscarPorId(1L);
 
@@ -90,29 +92,25 @@ class MovimentacaoServiceTest {
         }
 
         @Test
-        @DisplayName("Deve lançar exceção ao buscar movimentação por ID inexistente")
-        void deveLancarExcecaoAoBuscarIdInexistente() {
-            movimentacaoService.cadastrar(movimentacao1);
-
-            assertThrows(NoSuchElementException.class, () -> {
-                movimentacaoService.buscarPorId(999L);
-            });
+        @DisplayName("Deve retornar null ao buscar movimentação por ID inexistente")
+        void deveRetornarNullAoBuscarIdInexistente() {
+            when(movimentacaoRepository.findById(999L)).thenReturn(null);
+            Movimentacao resultado = movimentacaoService.buscarPorId(999L);
+            assertNull(resultado);
         }
 
         @Test
-        @DisplayName("Deve lançar exceção ao buscar em lista vazia")
-        void deveLancarExcecaoAoBuscarEmListaVazia() {
-            assertThrows(NoSuchElementException.class, () -> {
-                movimentacaoService.buscarPorId(1L);
-            });
+        @DisplayName("Deve retornar null quando repository não encontra")
+        void deveRetornarNullQuandoRepositoryNaoEncontra() {
+            when(movimentacaoRepository.findById(1L)).thenReturn(null);
+            Movimentacao resultado = movimentacaoService.buscarPorId(1L);
+            assertNull(resultado);
         }
 
         @Test
         @DisplayName("Deve buscar movimentação correta quando houver múltiplas")
         void deveBuscarMovimentacaoCorretaComMultiplas() {
-            movimentacaoService.cadastrar(movimentacao1);
-            movimentacaoService.cadastrar(movimentacao2);
-            movimentacaoService.cadastrar(movimentacao3);
+            when(movimentacaoRepository.findById(2L)).thenReturn(movimentacao2);
 
             Movimentacao resultado = movimentacaoService.buscarPorId(2L);
 
@@ -132,9 +130,7 @@ class MovimentacaoServiceTest {
         void deveCadastrarMovimentacaoComSucesso() {
             movimentacaoService.cadastrar(movimentacao1);
 
-            List<Movimentacao> movimentacoes = movimentacaoService.buscarTodas();
-
-            assertEquals(1, movimentacoes.size());
+            verify(movimentacaoRepository, times(1)).persist(movimentacao1);
         }
     }
 }

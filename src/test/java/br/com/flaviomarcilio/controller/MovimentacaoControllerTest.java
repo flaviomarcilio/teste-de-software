@@ -23,14 +23,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Testes Unitários do MovimentacaoController")
-class MovimentacaoControllerUnitTest {
+class MovimentacaoControllerTest {
 
     private MovimentacaoController controller;
     private MovimentacaoService movimentacaoService;
     private UriInfo uriInfo;
     private Movimentacao movimentacao1;
     private Movimentacao movimentacao2;
-    private Movimentacao movimentacao3;
 
     @BeforeEach
     void setUp() {
@@ -55,15 +54,6 @@ class MovimentacaoControllerUnitTest {
                 "BB Banco de Investimentos",
                 10,
                 new BigDecimal("3.50"));
-
-        movimentacao3 = new Movimentacao(3L,
-                TipoTransacao.CREDITO,
-                LocalDate.now(),
-                TipoMovimentacao.DIVIDENDO,
-                "ITUB4",
-                "BB Banco de Investimentos",
-                10,
-                new BigDecimal("1.50"));
     }
 
     @Nested

@@ -1,31 +1,29 @@
 package br.com.flaviomarcilio.service;
 
 import br.com.flaviomarcilio.model.Movimentacao;
+import br.com.flaviomarcilio.repository.MovimentacaoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
 public class MovimentacaoService {
 
-    private List<Movimentacao> movimentacoes;
+    private MovimentacaoRepository movimentacaoRepository;
 
-    public MovimentacaoService() {
-        this.movimentacoes = new ArrayList<>();
+    public MovimentacaoService(MovimentacaoRepository movimentacaoRepository) {
+        this.movimentacaoRepository = movimentacaoRepository;
     }
 
     public List<Movimentacao> buscarTodas() {
-        return movimentacoes;
+        return movimentacaoRepository.listAll();
     }
 
     public Movimentacao buscarPorId(Long id) {
-        return movimentacoes.stream()
-                .filter(movimentacao -> movimentacao.getId().equals(id))
-                .toList().getFirst();
+        return movimentacaoRepository.findById(id);
     }
 
     public void cadastrar(Movimentacao movimentacao) {
-        movimentacoes.add(movimentacao);
+        movimentacaoRepository.persist(movimentacao);
     }
 }
