@@ -37,7 +37,7 @@ class MovimentacaoControllerTest {
         uriInfo = mock(UriInfo.class);
         controller = new MovimentacaoController(movimentacaoService);
 
-        movimentacao1 = new Movimentacao(1L,
+        movimentacao1 = new Movimentacao(
                 TipoTransacao.CREDITO,
                 LocalDate.now(),
                 TipoMovimentacao.DIVIDENDO,
@@ -46,7 +46,7 @@ class MovimentacaoControllerTest {
                 10,
                 new BigDecimal("4.50"));
 
-        movimentacao2 = new Movimentacao(2L,
+        movimentacao2 = new Movimentacao(
                 TipoTransacao.CREDITO,
                 LocalDate.now(),
                 TipoMovimentacao.JUROS_SOBRE_CAPITAL_PROPRIO,

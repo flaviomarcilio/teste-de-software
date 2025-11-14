@@ -29,7 +29,12 @@ public class MovimentacaoController {
     @GET
     @Path("/{id}")
     public RestResponse<Movimentacao> buscarPorId(Long id) {
-        return RestResponse.ok(service.buscarPorId(id));
+        Movimentacao movimentacao = service.buscarPorId(id);
+
+        if (movimentacao == null) {
+            return RestResponse.notFound();
+        }
+        return RestResponse.ok(movimentacao);
     }
 
     @POST

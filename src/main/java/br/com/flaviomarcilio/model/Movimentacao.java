@@ -15,9 +15,9 @@ public class Movimentacao {
     public Movimentacao() {
     }
 
-    public Movimentacao(Long id, TipoTransacao tipoTransacao, LocalDate data, TipoMovimentacao tipoMovimentacao,
+    public Movimentacao(TipoTransacao tipoTransacao, LocalDate data, TipoMovimentacao tipoMovimentacao,
                         String codigoNegociacao, String instituicao, Integer quantidade, BigDecimal precoUnitario) {
-        this.id = id;
+
         this.tipoTransacao = tipoTransacao;
         this.data = data;
         this.tipoMovimentacao = tipoMovimentacao;

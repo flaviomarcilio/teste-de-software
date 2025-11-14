@@ -31,7 +31,7 @@ class MovimentacaoServiceTest {
         movimentacaoRepository = mock(MovimentacaoRepository.class);
         movimentacaoService = new MovimentacaoService(movimentacaoRepository);
 
-        movimentacao1 = new Movimentacao(1L,
+        movimentacao1 = new Movimentacao(
                 TipoTransacao.CREDITO,
                 LocalDate.now(),
                 TipoMovimentacao.DIVIDENDO,
@@ -40,7 +40,7 @@ class MovimentacaoServiceTest {
                 10,
                 new BigDecimal("4.50"));
 
-        movimentacao2 = new Movimentacao(2L,
+        movimentacao2 = new Movimentacao(
                 TipoTransacao.CREDITO,
                 LocalDate.now(),
                 TipoMovimentacao.JUROS_SOBRE_CAPITAL_PROPRIO,
@@ -49,7 +49,7 @@ class MovimentacaoServiceTest {
                 10,
                 new BigDecimal("3.50"));
 
-        movimentacao3 = new Movimentacao(3L,
+        movimentacao3 = new Movimentacao(
                 TipoTransacao.CREDITO,
                 LocalDate.now(),
                 TipoMovimentacao.DIVIDENDO,
