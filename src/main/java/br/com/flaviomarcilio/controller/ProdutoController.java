@@ -1,5 +1,6 @@
 package br.com.flaviomarcilio.controller;
 
+import br.com.flaviomarcilio.exceptions.ProdutoNaoCadastradoException;
 import br.com.flaviomarcilio.model.Produto;
 import br.com.flaviomarcilio.service.ProdutoService;
 import jakarta.transaction.Transactional;
@@ -29,7 +30,11 @@ public class ProdutoController {
     @GET
     @Path("/{ticker}")
     public RestResponse<Produto> buscarPorTicker(String ticker) {
-        return RestResponse.ok(service.buscarPorTicker(ticker));
+        try {
+            return RestResponse.ok(service.buscarPorTicker(ticker));
+        } catch (ProdutoNaoCadastradoException e) {
+            return RestResponse.notFound();
+        }
     }
 
     @POST
