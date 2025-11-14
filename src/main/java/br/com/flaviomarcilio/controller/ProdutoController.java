@@ -40,6 +40,10 @@ public class ProdutoController {
     @POST
     @Transactional
     public RestResponse<Void> cadastrar(Produto produto, @Context UriInfo uriInfo) {
+
+        if (produto == null) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
         service.cadastrar(produto);
         return RestResponse.created(uriInfo.getAbsolutePathBuilder().build());
     }
