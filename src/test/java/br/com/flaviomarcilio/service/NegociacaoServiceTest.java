@@ -75,7 +75,6 @@ class NegociacaoServiceTest {
             when(produtoService.buscarPorTicker("VALE3")).thenReturn(produto2);
 
             Negociacao negociacao1 = new Negociacao(
-                    1L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,
@@ -86,7 +85,6 @@ class NegociacaoServiceTest {
                     new BigDecimal("4.50"));
 
             Negociacao negociacao2 = new Negociacao(
-                    2L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,
@@ -111,7 +109,6 @@ class NegociacaoServiceTest {
             when(produtoService.buscarPorTicker("PETR4")).thenReturn(produto1);
 
             Negociacao negociacao1 = new Negociacao(
-                    1L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,
@@ -126,7 +123,6 @@ class NegociacaoServiceTest {
             Negociacao resultado = negociacaoService.buscarPorId(1L);
 
             assertNotNull(resultado);
-            assertEquals(1L, resultado.getId());
             assertEquals("PETR4", resultado.getCodigoNegociacao());
             assertEquals(10, resultado.getQuantidade());
         }
@@ -151,7 +147,6 @@ class NegociacaoServiceTest {
             when(produtoService.buscarPorTicker("PETR4")).thenReturn(produto1);
 
             Negociacao negociacao1 = new Negociacao(
-                    1L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,
@@ -172,7 +167,6 @@ class NegociacaoServiceTest {
             when(produtoService.buscarPorTicker(anyString())).thenThrow(new ProdutoNaoCadastradoException());
 
             Negociacao negociacao1 = new Negociacao(
-                    1L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,
@@ -192,7 +186,6 @@ class NegociacaoServiceTest {
             when(produtoService.buscarPorTicker("ITUB4")).thenThrow(new ProdutoNaoCadastradoException());
 
             Negociacao negociacao1 = new Negociacao(
-                    1L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,

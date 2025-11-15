@@ -1,5 +1,6 @@
 package br.com.flaviomarcilio.controller;
 
+import br.com.flaviomarcilio.exceptions.ProdutoNaoCadastradoException;
 import br.com.flaviomarcilio.model.Negociacao;
 import br.com.flaviomarcilio.service.NegociacaoService;
 import jakarta.transaction.Transactional;
@@ -29,13 +30,28 @@ public class NegociacaoController {
     @GET
     @Path("/{id}")
     public RestResponse<Negociacao> buscarPorId(Long id) {
-        return RestResponse.ok(negociacaoService.buscarPorId(id));
+
+        Negociacao negociacao = negociacaoService.buscarPorId(id);
+
+        if (negociacao == null) {
+            return RestResponse.notFound();
+        }
+        return RestResponse.ok(negociacao);
     }
 
     @POST
     @Transactional
     public RestResponse<Void> cadastrar(Negociacao negociacao, @Context UriInfo uriInfo) {
-        negociacaoService.cadastrar(negociacao);
-        return RestResponse.created(uriInfo.getAbsolutePathBuilder().build());
+
+        if (negociacao == null) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
+
+        try {
+            negociacaoService.cadastrar(negociacao);
+            return RestResponse.created(uriInfo.getAbsolutePathBuilder().build());
+        } catch (ProdutoNaoCadastradoException e) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
     }
 }

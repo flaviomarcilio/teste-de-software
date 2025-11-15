@@ -57,7 +57,6 @@ class NegociacaoControllerTest {
         void buscarPorIdDeveDelegarParaServico() {
 
             Negociacao negociacao = new Negociacao(
-                    1L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,
@@ -86,7 +85,6 @@ class NegociacaoControllerTest {
         void cadastrarDeveDelegarParaServico() {
 
             Negociacao negociacao = new Negociacao(
-                    1L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,
@@ -116,7 +114,6 @@ class NegociacaoControllerTest {
         void cadastrarDeveRetornarLocationHeader() {
 
             Negociacao negociacao = new Negociacao(
-                    1L,
                     LocalDate.now(),
                     TipoNegociacao.COMPRA,
                     TipoMercado.FRACIONARIO,

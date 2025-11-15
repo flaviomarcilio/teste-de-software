@@ -15,9 +15,8 @@ public class Negociacao {
     public Negociacao() {
     }
 
-    public Negociacao(Long id, LocalDate data, TipoNegociacao tipoNegociacao, TipoMercado tipoMercado, LocalDate vencimento,
+    public Negociacao(LocalDate data, TipoNegociacao tipoNegociacao, TipoMercado tipoMercado, LocalDate vencimento,
                       String instituicao, String codigoNegociacao, Integer quantidade, BigDecimal precoUnitario) {
-        this.id = id;
         this.data = data;
         this.tipoNegociacao = tipoNegociacao;
         this.mercado = tipoMercado;
