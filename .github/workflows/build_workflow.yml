@@ -60,3 +60,13 @@ jobs:
           files: ./target/site/jacoco-it/jacoco.xml
           flags: integration
           name: integration-tests-coverage
+
+      # Upload cobertura combinada (opcional)
+      - name: Upload merged coverage
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+        with:
+          files: ./target/site/jacoco-merged/jacoco.xml
+          flags: alltests
+          name: all-tests-coverage
