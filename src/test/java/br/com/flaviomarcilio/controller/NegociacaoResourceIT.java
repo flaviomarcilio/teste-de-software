@@ -91,7 +91,6 @@ public class NegociacaoResourceIT {
                 .body("size()", is(0))
                 .body("$", empty());
         }
-
     }
 
     @Nested
@@ -188,6 +187,8 @@ public class NegociacaoResourceIT {
             .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .header("Location",  containsString("/api/v1/negociacao"));
+
+            fixture.excluiProdutos();
         }
 
         @Test
