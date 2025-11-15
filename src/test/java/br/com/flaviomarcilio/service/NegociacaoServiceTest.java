@@ -21,14 +21,13 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@DisplayName("Testes para NegociacaoService")
+@DisplayName("Testes Unitários para NegociacaoService")
 class NegociacaoServiceTest {
 
     private NegociacaoRepository negociacaoRepository;
     private ProdutoService produtoService;
     private NegociacaoService negociacaoService;
     private Produto produto1;
-    private Produto produto2;
 
     @BeforeEach
     void setUp() {
@@ -43,13 +42,6 @@ class NegociacaoServiceTest {
                 "PETR4BR",
                 TipoProduto.PN,
                 "Bradesco");
-        produto2 = new Produto(
-                "VALE3",
-                "VALE S.A.",
-                "33.592.510/0001-54",
-                "VALE3BR",
-                TipoProduto.ON,
-                "Bradesco");
     }
 
     @Nested
@@ -57,8 +49,8 @@ class NegociacaoServiceTest {
     class ConsultarTests {
 
         @Test
-        @DisplayName("deve retornar lista vazia quando nenhuma negociação foi cadastrada")
-        void deveRetornarListaVazia() {
+        @DisplayName("Deve retornar lista vazia quando nenhuma negociação foi cadastrada")
+        void deveRetornarListaVaziaQuandoNenhumaNegociacaoFoiCadastrada() {
             when(negociacaoRepository.listAll()).thenReturn(Collections.emptyList());
 
             List<Negociacao> resultado = negociacaoService.buscarTodas();
@@ -68,11 +60,8 @@ class NegociacaoServiceTest {
         }
 
         @Test
-        @DisplayName("deve retornar todas as negociações cadastradas")
-        void deveRetornarTodasNegociacoes() {
-
-            when(produtoService.buscarPorTicker("PETR4")).thenReturn(produto1);
-            when(produtoService.buscarPorTicker("VALE3")).thenReturn(produto2);
+        @DisplayName("Deve retornar todas as negociações cadastradas")
+        void deveRetornarTodasNegociacoesCadastradas() {
 
             Negociacao negociacao1 = new Negociacao(
                     LocalDate.now(),
@@ -103,10 +92,8 @@ class NegociacaoServiceTest {
         }
 
         @Test
-        @DisplayName("deve retornar negociação quando ID existe")
+        @DisplayName("Deve retornar negociação quando ID existe")
         void deveRetornarNegociacaoQuandoIdExiste() {
-
-            when(produtoService.buscarPorTicker("PETR4")).thenReturn(produto1);
 
             Negociacao negociacao1 = new Negociacao(
                     LocalDate.now(),
@@ -128,10 +115,13 @@ class NegociacaoServiceTest {
         }
 
         @Test
-        @DisplayName("deve retornar null quando ID não existe")
+        @DisplayName("Deve retornar null quando ID não existe")
         void deveRetornarNullQuandoIdNaoExiste() {
+
             when(negociacaoRepository.findById(999L)).thenReturn(null);
+
             Negociacao resultado = negociacaoService.buscarPorId(999L);
+
             assertNull(resultado);
         }
     }
@@ -141,7 +131,7 @@ class NegociacaoServiceTest {
     class CadastrarTests {
 
         @Test
-        @DisplayName("deve cadastrar negociação quando produto existe")
+        @DisplayName("Deve cadastrar negociação quando produto existe")
         void deveCadastrarNegociacaoQuandoProdutoExiste() {
 
             when(produtoService.buscarPorTicker("PETR4")).thenReturn(produto1);
@@ -162,7 +152,7 @@ class NegociacaoServiceTest {
         }
 
         @Test
-        @DisplayName("não deve cadastrar quando produto service retorna null")
+        @DisplayName("Não deve cadastrar quando produto service retorna null")
         void naoDeveCadastrarQuandoProdutoServiceRetornaNull() {
             when(produtoService.buscarPorTicker(anyString())).thenThrow(new ProdutoNaoCadastradoException());
 
@@ -181,7 +171,7 @@ class NegociacaoServiceTest {
         }
 
         @Test
-        @DisplayName("deve lançar exceção ProdutoNaoCadastradoException quando produto não cadastrado")
+        @DisplayName("Deve lançar exceção ProdutoNaoCadastradoException quando produto não cadastrado")
         void deveLancarExcecaoEspecificaQuandoProdutoNaoCadastrado() {
             when(produtoService.buscarPorTicker("ITUB4")).thenThrow(new ProdutoNaoCadastradoException());
 

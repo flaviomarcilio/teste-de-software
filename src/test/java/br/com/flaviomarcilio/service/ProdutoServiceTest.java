@@ -5,6 +5,7 @@ import br.com.flaviomarcilio.model.enums.TipoProduto;
 import br.com.flaviomarcilio.repository.ProdutoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import br.com.flaviomarcilio.exceptions.ProdutoNaoCadastradoException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("Testes Unitários para ProdutoService")
 class ProdutoServiceTest {
 
     private ProdutoRepository produtoRepository;
@@ -50,67 +52,77 @@ class ProdutoServiceTest {
                 "Bradesco");
     }
 
-    @Test
-    @DisplayName("Deve retornar lista vazia quando não houver produtos cadastrados")
-    void deveBuscarTodosComListaVazia() {
-        List<Produto> resultado = produtoService.buscarTodos();
+    @Nested
+    @DisplayName("Funcionalidade: Consultar")
+    class ConsultarTests {
 
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
+        @Test
+        @DisplayName("Deve retornar lista vazia quando não houver produtos cadastrados")
+        void deveRetornarListaVaziaQuandoNaoHouverProdutosCadastrados() {
+            List<Produto> resultado = produtoService.buscarTodos();
+
+            assertNotNull(resultado);
+            assertTrue(resultado.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Deve retornar todos os produtos cadastrados")
+        void deveRetornarTodosProdutosCadastrados() {
+            List<Produto> produtosCadastrados = Arrays.asList(produto1, produto2, produto3);
+            when(produtoRepository.listAll()).thenReturn(produtosCadastrados);
+
+            List<Produto> resultado = produtoService.buscarTodos();
+
+            assertNotNull(resultado);
+            assertEquals(3, resultado.size());
+        }
+
+        @Test
+        @DisplayName("Deve retornar produto por ticker")
+        void deveRetornarProdutoPorTicker() {
+            when(produtoRepository.findByTicker("VALE3")).thenReturn(produto2);
+
+            Produto resultado = produtoService.buscarPorTicker("VALE3");
+
+            assertNotNull(resultado);
+            assertEquals("VALE3", resultado.getCodigoNegociacao());
+            assertEquals(produto2, resultado);
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção ao buscar em lista vazia")
+        void deveLancarExcecaoAoBuscarEmListaVazia() {
+            when(produtoRepository.findByTicker("PETR4")).thenReturn(null);
+
+            assertThrows(ProdutoNaoCadastradoException.class, () -> produtoService.buscarPorTicker("PETR4"));
+        }
     }
 
-    @Test
-    @DisplayName("Deve cadastrar múltiplos produtos")
-    void deveCadastrarMultiplosProdutos() {
-        List<Produto> produtosCadastrados = Arrays.asList(produto1, produto2, produto3);
-        when(produtoRepository.listAll()).thenReturn(produtosCadastrados);
+    @Nested
+    @DisplayName("Funcionalidade: Cadastrar")
+    class CadastrarTests {
 
-        produtoService.cadastrar(produto1);
-        produtoService.cadastrar(produto2);
-        produtoService.cadastrar(produto3);
+        @Test
+        @DisplayName("Deve cadastrar múltiplos produtos")
+        void deveCadastrarMultiplosProdutos() {
+            List<Produto> produtosCadastrados = Arrays.asList(produto1, produto2, produto3);
+            when(produtoRepository.listAll()).thenReturn(produtosCadastrados);
 
-        List<Produto> produtos = produtoService.buscarTodos();
+            produtoService.cadastrar(produto1);
+            produtoService.cadastrar(produto2);
+            produtoService.cadastrar(produto3);
 
-        assertEquals(3, produtos.size());
-    }
+            List<Produto> produtos = produtoService.buscarTodos();
 
-    @Test
-    @DisplayName("Deve buscar todos os produtos cadastrados")
-    void deveBuscarTodosProdutos() {
-        List<Produto> produtosCadastrados = Arrays.asList(produto1, produto2, produto3);
-        when(produtoRepository.listAll()).thenReturn(produtosCadastrados);
+            assertEquals(3, produtos.size());
+        }
 
-        List<Produto> resultado = produtoService.buscarTodos();
+        @Test
+        @DisplayName("Deve persistir produto ao cadastrar")
+        void devePersistirProdutoAoCadastrar() {
+            produtoService.cadastrar(produto1);
 
-        assertNotNull(resultado);
-        assertEquals(3, resultado.size());
-    }
-
-    @Test
-    @DisplayName("Deve buscar produto por ticker existente")
-    void deveBuscarProdutoPorTickerExistente() {
-        when(produtoRepository.findByTicker("VALE3")).thenReturn(produto2);
-
-        Produto resultado = produtoService.buscarPorTicker("VALE3");
-
-        assertNotNull(resultado);
-        assertEquals("VALE3", resultado.getCodigoNegociacao());
-        assertEquals(produto2, resultado);
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao buscar em lista vazia")
-    void deveLancarExcecaoAoBuscarEmListaVazia() {
-        when(produtoRepository.findByTicker("PETR4")).thenReturn(null);
-
-        assertThrows(ProdutoNaoCadastradoException.class, () -> produtoService.buscarPorTicker("PETR4"));
-    }
-
-    @Test
-    @DisplayName("Deve persistir produto ao cadastrar")
-    void devePersistirAoCadastrar() {
-        produtoService.cadastrar(produto1);
-
-        verify(produtoRepository, times(1)).persist(produto1);
+            verify(produtoRepository, times(1)).persist(produto1);
+        }
     }
 }

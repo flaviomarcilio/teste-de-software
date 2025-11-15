@@ -61,8 +61,8 @@ class MovimentacaoControllerTest {
     class ConsultarTests {
 
         @Test
-        @DisplayName("BuscarTodas deve chamar service e retornar RestResponse")
-        void buscarTodasDeveChamarServiceERetornarRestResponse() {
+        @DisplayName("Deve retornar a lista de movimentações cadastradas")
+        void deveRetornarListaDeMovimentacoesCadastras() {
             List<Movimentacao> movimentacoes = Arrays.asList(movimentacao1, movimentacao2);
             when(movimentacaoService.buscarTodas()).thenReturn(movimentacoes);
 
@@ -75,8 +75,8 @@ class MovimentacaoControllerTest {
         }
 
         @Test
-        @DisplayName("BuscarPorId deve chamar service com ID correto")
-        void buscarPorIdDeveChamarServiceComIdCorreto() {
+        @DisplayName("Deve retornar a movimentação pelo ID")
+        void deveRetornarMovimentacaoPeloId() {
             when(movimentacaoService.buscarPorId(1L)).thenReturn(movimentacao1);
 
             RestResponse<Movimentacao> response = controller.buscarPorId(1L);
@@ -93,8 +93,8 @@ class MovimentacaoControllerTest {
     class CadastrarTests {
 
         @Test
-        @DisplayName("Cadastrar deve chamar service e retornar Created")
-        void cadastrarDeveChamarServiceERetornarCreated() {
+        @DisplayName("Deve cadastrar uma movimentação")
+        void deveCadastrarUmaMovimentacao() {
 
             UriBuilder uriBuilder = mock(UriBuilder.class);
             URI uri = URI.create("http://localhost:8080/api/v1/movimentacao");
@@ -112,8 +112,8 @@ class MovimentacaoControllerTest {
         }
 
         @Test
-        @DisplayName("Cadastrar deve retornar Location header")
-        void cadastrarDeveRetornarLocationHeader() {
+        @DisplayName("Deve cadastrar uma movimentação e retornar Location header")
+        void deveCadastrarUmaMovimentacaoERetornarLocationHeader() {
             Movimentacao movimentacao = new Movimentacao();
             UriBuilder uriBuilder = mock(UriBuilder.class);
             URI uri = URI.create("http://localhost:8080/api/v1/movimentacao/1");

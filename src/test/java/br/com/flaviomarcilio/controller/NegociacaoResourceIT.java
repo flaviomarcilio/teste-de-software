@@ -39,7 +39,7 @@ public class NegociacaoResourceIT {
     class BuscarTodasTests {
 
         @Test
-        @DisplayName("deve retornar lista de negociações com status 200")
+        @DisplayName("Deve retornar lista de negociações com status 200")
         void deveRetornarListaComSucesso() {
 
             Negociacao compraPetr4 = new Negociacao(
@@ -79,7 +79,7 @@ public class NegociacaoResourceIT {
         }
 
         @Test
-        @DisplayName("deve retornar lista vazia quando não houver negociações")
+        @DisplayName("Deve retornar lista vazia quando não houver negociações")
         void deveRetornarListaVazia() {
 
             given()
@@ -126,7 +126,7 @@ public class NegociacaoResourceIT {
 //        }
 
         @Test
-        @DisplayName("deve retornar erro 404 quando ID não existe")
+        @DisplayName("Deve retornar erro 404 quando ID não existe")
         void deveRetornarErro404QuandoIdNaoExiste() {
 
             Negociacao compraPetr4 = new Negociacao(
@@ -156,7 +156,7 @@ public class NegociacaoResourceIT {
     class CadastrarTests {
 
         @Test
-        @DisplayName("deve cadastrar negociação de compra com sucesso quando produto estiver cadastrado")
+        @DisplayName("Deve cadastrar negociação de compra com sucesso quando produto estiver cadastrado")
         void deveCadastrarNegociacaoDeCompraComSucesso() {
 
             Produto petr4 = new Produto(
@@ -192,7 +192,7 @@ public class NegociacaoResourceIT {
         }
 
         @Test
-        @DisplayName("deve retornar erro 400 para body vazio")
+        @DisplayName("Deve retornar erro 400 para body vazio")
         void deveRetornarErro400ParaBodyVazio() {
 
             given()
@@ -204,7 +204,7 @@ public class NegociacaoResourceIT {
         }
 
         @Test
-        @DisplayName("deve retornar erro 400 quando produto não está cadastrado")
+        @DisplayName("Deve retornar erro 400 quando produto não está cadastrado")
         void deveRetornarErro400QuandoProdutoNaoCadastrado() {
 
             Negociacao vendaVale3 = new Negociacao(
