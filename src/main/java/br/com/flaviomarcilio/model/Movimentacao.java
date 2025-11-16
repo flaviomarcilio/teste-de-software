@@ -32,6 +32,7 @@ public class Movimentacao {
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_transacao")
     private TipoTransacao tipoTransacao;
 
     @NotNull
@@ -60,7 +61,7 @@ public class Movimentacao {
         return id;
     }
 
-    public TipoTransacao getTransacao() {
+    public TipoTransacao getTipoTransacao() {
         return tipoTransacao;
     }
 

@@ -88,7 +88,7 @@ class MovimentacaoServiceTest {
             assertNotNull(resultado);
             assertEquals("PETR4", resultado.getCodigoNegociacao());
             assertEquals(TipoMovimentacao.DIVIDENDO, resultado.getTipoMovimentacao());
-            assertEquals(TipoTransacao.CREDITO, resultado.getTransacao());
+            assertEquals(TipoTransacao.CREDITO, resultado.getTipoTransacao());
             assertEquals(new BigDecimal("4.50"), resultado.getPrecoUnitario());
             assertEquals(10, resultado.getQuantidade());
         }
