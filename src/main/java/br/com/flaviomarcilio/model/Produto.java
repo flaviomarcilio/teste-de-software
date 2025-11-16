@@ -8,8 +8,7 @@ import jakarta.persistence.*;
 @Table(name = "produtos")
 public class Produto {
 
-    public Produto() {
-    }
+    public Produto() {}
 
     public Produto(String codigoNegociacao, String nome, String cnpj, String codigoISIN,
                    TipoProduto tipoProduto, String administrador) {

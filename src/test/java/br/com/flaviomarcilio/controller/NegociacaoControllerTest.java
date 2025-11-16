@@ -95,7 +95,10 @@ class NegociacaoControllerTest {
 
             assertNotNull(response);
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertEquals(negociacao, response.getEntity());
+            assertEquals(negociacao.getCodigoNegociacao(), response.getEntity().getCodigoNegociacao());
+            assertEquals(negociacao.getTipoNegociacao(), response.getEntity().getTipoNegociacao());
+            assertEquals(negociacao.getInstituicao(), response.getEntity().getInstituicao());
+            assertEquals(negociacao.getPrecoUnitario(), response.getEntity().getPrecoUnitario());
         }
 
         @Test

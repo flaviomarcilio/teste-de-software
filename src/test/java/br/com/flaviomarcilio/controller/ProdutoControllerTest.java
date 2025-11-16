@@ -83,8 +83,11 @@ class ProdutoControllerTest {
 
             assertNotNull(response);
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertEquals(produto, response.getEntity());
-            assertEquals("PETR4", response.getEntity().getCodigoNegociacao());
+            assertEquals(produto.getTipoProduto(), response.getEntity().getTipoProduto());
+            assertEquals(produto.getNome(), response.getEntity().getNome());
+            assertEquals(produto.getCodigoNegociacao(), response.getEntity().getCodigoNegociacao());
+            assertEquals(produto.getCnpj(), response.getEntity().getCnpj());
+            assertEquals(produto.getAdministrador(), response.getEntity().getAdministrador());
             verify(produtoService, times(1)).buscarPorTicker("PETR4");
         }
     }

@@ -83,7 +83,8 @@ class MovimentacaoControllerTest {
 
             assertNotNull(response);
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertEquals(movimentacao1, response.getEntity());
+            assertEquals(movimentacao1.getTipoMovimentacao(), response.getEntity().getTipoMovimentacao());
+            assertEquals(movimentacao1.getTransacao(), response.getEntity().getTransacao());
             verify(movimentacaoService, times(1)).buscarPorId(1L);
         }
     }
@@ -114,15 +115,15 @@ class MovimentacaoControllerTest {
         @Test
         @DisplayName("Deve cadastrar uma movimentação e retornar Location header")
         void deveCadastrarUmaMovimentacaoERetornarLocationHeader() {
-            Movimentacao movimentacao = new Movimentacao();
+
             UriBuilder uriBuilder = mock(UriBuilder.class);
             URI uri = URI.create("http://localhost:8080/api/v1/movimentacao/1");
 
             when(uriInfo.getAbsolutePathBuilder()).thenReturn(uriBuilder);
             when(uriBuilder.build()).thenReturn(uri);
-            doNothing().when(movimentacaoService).cadastrar(movimentacao);
+            doNothing().when(movimentacaoService).cadastrar(movimentacao1);
 
-            RestResponse<Void> response = controller.cadastrar(movimentacao, uriInfo);
+            RestResponse<Void> response = controller.cadastrar(movimentacao1, uriInfo);
 
             assertNotNull(response);
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());

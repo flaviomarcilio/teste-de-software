@@ -12,8 +12,7 @@ import java.time.LocalDate;
 @Table(name = "movimentacoes")
 public class Movimentacao {
 
-    public Movimentacao() {
-    }
+    public Movimentacao() {}
 
     public Movimentacao(TipoTransacao tipoTransacao, LocalDate data, TipoMovimentacao tipoMovimentacao,
                         String codigoNegociacao, String instituicao, Integer quantidade, BigDecimal precoUnitario) {
